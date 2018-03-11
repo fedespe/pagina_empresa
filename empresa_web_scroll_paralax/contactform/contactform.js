@@ -57,6 +57,7 @@ jQuery(document).ready(function($) {
         i.next('.validation').html((ierror ? (i.attr('data-msg') !== undefined ? i.attr('data-msg') : 'wrong Input') : '')).show('blind');
       }
     });
+	
     f.children('textarea').each(function() { // run all inputs
 
       var i = $(this); // current input
@@ -90,8 +91,11 @@ jQuery(document).ready(function($) {
     });
     if (ferror) return false;
     else var str = $(this).serialize();
-    $.ajax({
+	
+	enviarCorreo();
+    /*$.ajax({
       type: "POST",
+	  
       url: "contactform/contactform.php",
       data: str,
       success: function(msg) {
@@ -107,8 +111,49 @@ jQuery(document).ready(function($) {
         }
 
       }
-    });
+    });*/
     return false;
   });
 
 });
+
+function enviarCorreo(){
+	/*mostrarCargando();*/
+	var formularioNombre = $("#name").val();
+	var formularioEmail = $("#email").val();
+	var formularioAsunto = $("#subject").val();
+	var formularioMensaje = $("#message").val();
+	
+	var parametros = {
+		"nombre":formularioNombre,
+		"email":formularioEmail,
+		"asunto":formularioAsunto,
+		"mensaje":formularioMensaje
+	};
+	
+    $.ajax({
+		url: "php/envioCorreo.php",
+		type: "post",
+		data: parametros,
+		success: function(data){
+			$("#sendmessage").addClass("show");
+			$("#errormessage").removeClass("show");
+			$('.contactForm').find("input, textarea").val("");
+			/*ocultarCargando();*/
+		},
+		error: function(data){
+			$("#sendmessage").removeClass("show");
+			$("#errormessage").addClass("show");
+			$('#errormessage').html("Ha ocurrido un error. Por favor, intente nuevamente o contacte a los administradores del sitio.");
+			/*ocultarCargando();*/
+		}
+	});
+}
+
+function mostarCargando(){
+	$(".overlay").show();
+}
+
+function ocultarCargando(){
+	$(".overlay").hide();
+}
